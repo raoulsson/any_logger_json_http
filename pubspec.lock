@@ -20,12 +20,11 @@ packages:
   any_logger:
     dependency: "direct main"
     description:
-      path: "."
-      ref: dev13
-      resolved-ref: d123d76538306dcc429a9ef23b3239867d23f3c1
-      url: "https://github.com/raoulsson/any_logger"
-    source: git
-    version: "1.0.3"
+      name: any_logger
+      sha256: ec17a3491bead7940c1350340e32dcce5c55f4d97fe35d3b0c21d2bd27378e7d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   args:
     dependency: transitive
     description:
