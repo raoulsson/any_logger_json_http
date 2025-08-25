@@ -1,0 +1,93 @@
+/////////////////////////////////////////////////////////////////////////
+// Example console output from running example/any_logger_example.dart //
+/////////////////////////////////////////////////////////////////////////
+JSON HTTP Appender Configuration Examples
+
+==================================================
+
+### Example 1: Basic Configuration ###
+
+Basic config:
+  type: JSON_HTTP
+  url: https://log-collector.example.com/logs
+  level: INFO
+  batchSize: 100
+  batchIntervalSeconds: 60
+
+Alternative field names:
+  type: JSON_HTTP
+  url: https://logs.example.com
+  bufferSize: 50
+  flushIntervalSeconds: 30
+  enableCompression: true
+
+### Example 2: Authentication ###
+
+Bearer token auth:
+  type: JSON_HTTP
+  url: https://api.example.com/logs
+  authToken: sk-1234...
+  authType: Bearer
+  level: WARN
+
+Basic auth:
+  type: JSON_HTTP
+  url: https://logs.example.com
+  username: log_user
+  password: ******
+  level: ERROR
+
+### Example 3: Advanced Configuration ###
+
+Advanced configuration:
+  type: JSON_HTTP
+  url: https://enterprise.logging.com
+  endpointPath: v2/ingest
+  level: DEBUG
+  headers:
+    X-Application-Id: my-app-123
+    X-Environment: production
+    X-Region: us-west-2
+  batchSize: 200
+  batchIntervalSeconds: 15
+  maxRetries: 5
+  retryDelaySeconds: 2
+  exponentialBackoff: true
+  includeMetadata: true
+  includeStackTrace: true
+  compressBatch: true
+  timeoutSeconds: 10
+
+### Example 4: Builder Pattern ###
+
+Built appender with:
+  URL: https://logs.example.com
+  Level: ERROR
+  Batch size: 150
+  Batch interval: 0:00:20.000000
+  Headers: {X-Service: user-service, X-Version: 2.1.0, Authorization: Bearer sk-test-token, Content-Type: application/json}
+  Auth type: Bearer
+
+Logstash preset appender:
+  Batch size: 200
+  Include metadata: true
+  Include stack traces: true
+
+### Example 5: LoggerFactory Integration ###
+
+LoggerFactory configuration:
+  Appenders: 2
+    1. Type: CONSOLE, Level: INFO
+    2. Type: JSON_HTTP, Level: WARN
+
+Logger configured with 2 appenders:
+  - CONSOLE (Level: INFO)
+  - JSON_HTTP (Level: WARN)
+
+Using LoggerBuilder:
+Builder created 2 appenders
+
+==================================================
+Examples completed (no actual HTTP calls made)
+
+Process finished with exit code 0
