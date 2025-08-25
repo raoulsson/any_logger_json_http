@@ -18,7 +18,7 @@ endpoints with automatic batching, retry logic, and compression support.
 
 ```yaml
 dependencies:
-  any_logger: ^1.0.1
+  any_logger: ^1.0.4
   any_logger_json_http: ^1.0.0
 ```
 
