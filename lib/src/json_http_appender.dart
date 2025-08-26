@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 /// - Customizable JSON structure
 /// - Compression support
 class JsonHttpAppender extends Appender {
-  static const String LOGGER_NAME = 'JSON_HTTP';
+  static const String appenderName = 'JSON_HTTP';
 
   // Connection settings
   late String url;
@@ -440,7 +440,7 @@ class JsonHttpAppender extends Appender {
 
   @override
   String getType() {
-    return 'JSON_HTTP';
+    return JsonHttpAppender.appenderName;
   }
 
   /// Get statistics about sent logs

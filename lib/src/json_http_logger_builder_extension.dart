@@ -1,5 +1,7 @@
 import 'package:any_logger/any_logger.dart';
 
+import '../any_logger_json_http.dart';
+
 /// Builder extension for JsonHttpAppender
 extension JsonHttpLoggerBuilderExtension on LoggerBuilder {
   /// Adds a JSON HTTP appender to the logger configuration.
@@ -23,7 +25,7 @@ extension JsonHttpLoggerBuilderExtension on LoggerBuilder {
     String dateFormat = Appender.defaultDateFormat,
   }) {
     final config = <String, dynamic>{
-      'type': 'JSON_HTTP',
+      'type': JsonHttpAppender.appenderName,
       'url': url,
       'level': level.name,
       'format': format,

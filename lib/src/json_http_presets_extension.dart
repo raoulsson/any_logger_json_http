@@ -1,5 +1,7 @@
 import 'package:any_logger/any_logger.dart';
 
+import '../any_logger_json_http.dart';
+
 /// Extension methods for adding JsonHttpAppender to presets
 extension JsonHttpPresets on LoggerPresets {
   /// Production preset with JSON HTTP logging to a central server
@@ -17,7 +19,7 @@ extension JsonHttpPresets on LoggerPresets {
           'dateFormat': 'HH:mm:ss',
         },
         {
-          'type': 'JSON_HTTP',
+          'type': JsonHttpAppender.appenderName,
           'url': url,
           'authToken': authToken,
           'authType': 'Bearer',
@@ -48,7 +50,7 @@ extension JsonHttpPresets on LoggerPresets {
           'dateFormat': 'HH:mm:ss.SSS',
         },
         {
-          'type': 'JSON_HTTP',
+          'type': JsonHttpAppender.appenderName,
           'url': url,
           'username': username,
           'password': password,
@@ -86,7 +88,7 @@ extension JsonHttpPresets on LoggerPresets {
           'rotationCycle': 'DAY',
         },
         {
-          'type': 'JSON_HTTP',
+          'type': JsonHttpAppender.appenderName,
           'url': url,
           'authToken': apiKey,
           'authType': 'Bearer',

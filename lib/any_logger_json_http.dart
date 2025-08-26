@@ -25,7 +25,7 @@ class AnyLoggerJsonHttpExtension {
   static void register() {
     if (_registered) return;
 
-    AppenderRegistry.instance.register('JSON_HTTP', (config,
+    AppenderRegistry.instance.register(JsonHttpAppender.appenderName, (config,
         {test = false, date}) async {
       return await JsonHttpAppender.fromConfig(config, test: test, date: date);
     });
@@ -39,7 +39,7 @@ class AnyLoggerJsonHttpExtension {
 
   /// Unregisters the JSON HTTP appender (mainly for testing).
   static void unregister() {
-    AppenderRegistry.instance.unregister('JSON_HTTP');
+    AppenderRegistry.instance.unregister(JsonHttpAppender.appenderName);
     _registered = false;
   }
 

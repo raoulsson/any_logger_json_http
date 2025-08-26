@@ -37,7 +37,7 @@ JsonHttpAppenderBuilder jsonHttpAppenderBuilder(String url) =>
 
 class JsonHttpAppenderBuilder {
   final Map<String, dynamic> _config = {
-    'type': 'JSON_HTTP',
+    'type': JsonHttpAppender.appenderName,
   };
 
   /// Creates a new JsonHttpAppenderBuilder with the required URL.
