@@ -22,11 +22,16 @@ dependencies:
   any_logger_json_http: ^x.y.z  // See Installing
 ```
 
-The JSON HTTP appender auto-registers when imported, so you just need to import both packages:
+To register the JSON HTTP appender you have to import the library
 
 ```dart
 import 'package:any_logger/any_logger.dart';
-import 'package:any_logger_json_http/any_logger_json_http.dart';
+import 'package:any_logger_mysql/any_logger_mysql.dart';
+```
+and call:
+
+```dart
+AnyLoggerJsonHttpExtension.register();
 ```
 
 ## Quick Start

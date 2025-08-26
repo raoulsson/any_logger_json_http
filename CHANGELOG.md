@@ -1,9 +1,13 @@
 # Changelog
 
+## 1.0.6
+
+* Adding documentation on how to register this extension
+
 ## 1.0.5
 
 * Upgrading to any_logger 1.0.7 - Important bug fix
-* 
+ 
 ## 1.0.4
 
 * Depend on any_logger ^1.0.6
