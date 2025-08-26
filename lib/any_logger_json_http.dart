@@ -59,4 +59,3 @@ class _Init {
 
 // Force initialization by accessing the singleton
 final ensureInitialized = _Init._instance;
-
