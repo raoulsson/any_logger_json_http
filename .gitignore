@@ -15,4 +15,4 @@ doc/api/
 http_endpoint_credentials.txt
 
 *.log
-.anylogger/
+.anylogger/pubspec.lock
