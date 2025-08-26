@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+* Depend on any_logger ^1.0.6
+
 ## 1.0.3
 
 * Remove pubspec.lock from version control
