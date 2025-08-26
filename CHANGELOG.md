@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+* Updated README
+
 ## 1.0.2
 
 * Using static const String appenderName = 'JSON_HTTP'; instead of string

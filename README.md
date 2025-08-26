@@ -18,8 +18,8 @@ endpoints with automatic batching, retry logic, and compression support.
 
 ```yaml
 dependencies:
-  any_logger: ^1.0.4
-  any_logger_json_http: ^1.0.0
+  any_logger: ^x.y.z  
+  any_logger_json_http: ^x.y.z  // See Installing
 ```
 
 The JSON HTTP appender auto-registers when imported, so you just need to import both packages:
