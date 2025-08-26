@@ -495,7 +495,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 Part of the [Any Logger](https://pub.dev/packages/any_logger) ecosystem.
 
-## 👏 Funding
+## 💚 Funding
 
 - 🏅 https://github.com/sponsors/raoulsson
 - 🪙 https://www.buymeacoffee.com/raoulsson
