@@ -3,7 +3,7 @@ description: >-
   An extension for any_logger that sends log records as JSON objects over HTTP. Ideal for sending 
   logs to services like Logstash or other custom endpoints.
 
-version: 1.0.3
+version: 1.0.2
 
 homepage: https://github.com/raoulsson/any_logger_json_http
 repository: https://github.com/raoulsson/any_logger_json_http

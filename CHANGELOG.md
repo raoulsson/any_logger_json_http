@@ -1,14 +1,11 @@
 # Changelog
 
-## 1.0.3
-
-* Updated README
-* Fixed issues reported by pano
-* Dependency to any_logger ^1.0.5
-
 ## 1.0.2
 
 * Using static const String appenderName = 'JSON_HTTP'; instead of string
+* Updated README
+* Fixed issues reported by pano
+* Dependency to any_logger ^1.0.5
 
 ## 1.0.1
 
