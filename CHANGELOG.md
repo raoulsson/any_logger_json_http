@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+* Remove pubspec.lock from version control
+
 ## 1.0.2
 
 * Using static const String appenderName = 'JSON_HTTP'; instead of string
