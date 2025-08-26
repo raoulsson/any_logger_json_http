@@ -19,7 +19,7 @@ platforms:
   windows:
 
 dependencies:
-  any_logger: ^1.0.4
+  any_logger: ^1.0.5
   http: ^1.2.0
 
 dev_dependencies:
