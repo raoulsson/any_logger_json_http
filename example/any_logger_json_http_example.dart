@@ -224,6 +224,7 @@ Future<void> example5_loggerFactory() async {
   // Builder-based setup
   print('\nUsing LoggerBuilder:');
   await LoggerFactory.builder()
+      .replaceAll()
       .console(level: Level.INFO)
       .jsonHttp(
         url: 'https://logs.example.com',

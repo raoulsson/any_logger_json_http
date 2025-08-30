@@ -344,7 +344,7 @@ void main() {
     });
 
     test('should work with LoggerBuilder extension', () async {
-      await LoggerFactory.builder()
+      await LoggerFactory.builder().replaceAll()
           .console(level: Level.INFO)
           .jsonHttp(
             url: 'https://api.example.com',

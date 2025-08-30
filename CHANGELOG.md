@@ -3,6 +3,7 @@
 ## 1.0.9
 
 * Logs are not sent after previous versions. Fixed
+* Updated tests to work with LoggerBuilder changes from any_logger 1.0.12
 
 ## 1.0.8
 

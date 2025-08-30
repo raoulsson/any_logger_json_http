@@ -237,7 +237,13 @@ class JsonHttpAppender extends Appender {
 
     // Add to buffer
     _logBuffer.add(logRecord);
-    Logger.getSelfLogger()?.logTrace('JsonHttpAppender: Added to buffer. Size now: ${_logBuffer.length}/$batchSize');
+
+    if (Logger.getSelfLogger() != null && Logger.getSelfLogger()!.isTraceEnabled) {
+      if (_logBuffer.length % 25 == 0) {
+        Logger.getSelfLogger()
+            ?.logTrace('JsonHttpAppender: Added to buffer. Size now: ${_logBuffer.length}/$batchSize');
+      }
+    }
 
     // Check if we should send immediately (for critical errors)
     if (logRecord.level.index >= Level.ERROR.index && _logBuffer.length >= 10) {
@@ -491,7 +497,7 @@ class JsonHttpAppender extends Appender {
     return 'url: $url, batchSize: $batchSize, batchInterval: $batchInterval';
   }
 
-  void testJsonHttpAppender() async {
+  Future<void> testJsonHttpAppender() async {
     print('\n===== Testing JsonHttpAppender =====\n');
 
     // Check if it's registered
