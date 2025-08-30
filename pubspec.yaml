@@ -23,7 +23,7 @@ dependencies:
   any_logger:
     git:
       url: https://github.com/raoulsson/any_logger
-      ref: dev24
+      ref: dev27
   http: ^1.2.0
 
 dev_dependencies:
