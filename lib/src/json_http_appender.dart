@@ -228,29 +228,43 @@ class JsonHttpAppender extends Appender {
 
   @override
   void append(LogRecord logRecord) {
-    if (!enabled) return;
+    if (!enabled) {
+      Logger.getSelfLogger()?.logTrace('JsonHttpAppender: Skipping append - appender disabled');
+      return;
+    }
 
     logRecord.loggerName ??= getType().toString();
 
     // Add to buffer
     _logBuffer.add(logRecord);
+    Logger.getSelfLogger()?.logTrace('JsonHttpAppender: Added to buffer. Size now: ${_logBuffer.length}/$batchSize');
 
     // Check if we should send immediately (for critical errors)
     if (logRecord.level.index >= Level.ERROR.index && _logBuffer.length >= 10) {
-      _sendBatch();
+      Logger.getSelfLogger()
+          ?.logDebug('JsonHttpAppender: Triggering immediate send due to ERROR level with buffer >= 10');
+      _sendBatch(); // This is fire-and-forget
     }
     // Or if buffer is full
     else if (_logBuffer.length >= batchSize) {
-      _sendBatch();
+      Logger.getSelfLogger()
+          ?.logDebug('JsonHttpAppender: Buffer full (${_logBuffer.length}/$batchSize), triggering send');
+      _sendBatch(); // This is fire-and-forget
     }
   }
 
   Future<void> _sendBatch() async {
-    if (_logBuffer.isEmpty) return;
+    Logger.getSelfLogger()?.logDebug('JsonHttpAppender._sendBatch() called with ${_logBuffer.length} logs');
+
+    if (_logBuffer.isEmpty) {
+      Logger.getSelfLogger()?.logTrace('JsonHttpAppender: No logs to send');
+      return;
+    }
 
     // Copy and clear buffer
     final logs = List<LogRecord>.from(_logBuffer);
     _logBuffer.clear();
+    Logger.getSelfLogger()?.logDebug('JsonHttpAppender: Preparing to send ${logs.length} logs');
 
     if (test) {
       Logger.getSelfLogger()?.logDebug('Test mode: Would send batch of ${logs.length} logs to $url');
@@ -259,28 +273,38 @@ class JsonHttpAppender extends Appender {
       return;
     }
 
+    if (_httpClient == null) {
+      Logger.getSelfLogger()?.logError('JsonHttpAppender: HTTP client is null! Cannot send logs');
+      // Put logs back
+      _logBuffer.insertAll(0, logs);
+      return;
+    }
+
     try {
       final jsonData = _createJsonPayload(logs);
       final body = jsonEncode(jsonData);
+      Logger.getSelfLogger()?.logDebug('JsonHttpAppender: Sending ${body.length} bytes to $url');
 
       final success = await _sendWithRetry(body);
 
       if (success) {
         _successfulSends++;
         _lastSendTime = DateTime.now();
-        Logger.getSelfLogger()?.logDebug('Successfully sent ${logs.length} log records to $url');
+        Logger.getSelfLogger()?.logInfo('JsonHttpAppender: Successfully sent ${logs.length} log records');
       } else {
         _failedSends++;
+        Logger.getSelfLogger()?.logWarn('JsonHttpAppender: Failed to send ${logs.length} logs');
         // Put logs back if send failed (with overflow protection)
         if (_logBuffer.length < batchSize * 2) {
           _logBuffer.insertAll(0, logs);
+          Logger.getSelfLogger()?.logDebug('JsonHttpAppender: Returned ${logs.length} logs to buffer');
         } else {
           Logger.getSelfLogger()?.logWarn('Dropping ${logs.length} log records due to buffer overflow');
         }
       }
-    } catch (e) {
+    } catch (e, stack) {
       _failedSends++;
-      Logger.getSelfLogger()?.logError('Failed to send logs: $e');
+      Logger.getSelfLogger()?.logError('JsonHttpAppender: Exception in _sendBatch: $e\n$stack');
 
       // Put logs back if there's room
       if (_logBuffer.length < batchSize * 2) {
@@ -465,5 +489,92 @@ class JsonHttpAppender extends Appender {
   @override
   String getShortConfigDesc() {
     return 'url: $url, batchSize: $batchSize, batchInterval: $batchInterval';
+  }
+
+  void testJsonHttpAppender() async {
+    print('\n===== Testing JsonHttpAppender =====\n');
+
+    // Check if it's registered
+    print('1. Is JSON_HTTP registered? ${AppenderRegistry.instance.isRegistered("JSON_HTTP")}');
+
+    // Get the logger and find JsonHttpAppender
+    final logger = LoggerFactory.getRootLogger();
+    JsonHttpAppender? jsonAppender;
+
+    for (var appender in logger.appenders) {
+      if (appender is JsonHttpAppender) {
+        jsonAppender = appender;
+        break;
+      }
+    }
+
+    if (jsonAppender == null) {
+      print('ERROR: No JsonHttpAppender found in logger!');
+      print('Appenders in logger: ${logger.appenders.map((a) => a.getType()).toList()}');
+      return;
+    }
+
+    print('2. JsonHttpAppender found!');
+    jsonAppender.debugStatus();
+
+    // Test logging
+    print('3. Sending test messages...');
+    for (int i = 1; i <= 5; i++) {
+      logger.logInfo('Test message $i for JsonHttpAppender');
+    }
+
+    print('4. After logging 5 messages:');
+    jsonAppender.debugStatus();
+
+    // Try to trigger an error to force send
+    print('5. Logging an error to trigger immediate send...');
+    logger.logError('Test error message', exception: Exception('Test exception'));
+
+    await Future.delayed(Duration(seconds: 1));
+
+    print('6. After error:');
+    jsonAppender.debugStatus();
+
+    // Force a flush
+    print('7. Forcing flush...');
+    await jsonAppender.flush();
+
+    print('8. After flush:');
+    jsonAppender.debugStatus();
+
+    // Wait for batch interval
+    print('9. Waiting for batch interval (${jsonAppender.batchInterval})...');
+    await Future.delayed(jsonAppender.batchInterval + Duration(seconds: 1));
+
+    print('10. After waiting:');
+    jsonAppender.debugStatus();
+
+    print('\n===== End Test =====\n');
+  }
+
+  void debugStatus() {
+    print('\n===== JsonHttpAppender Debug =====');
+    print('Enabled: $enabled');
+    print('Test mode: $test');
+    print('URL: $url');
+    print('Endpoint path: $endpointPath');
+    print('HTTP Client: ${_httpClient != null ? "initialized" : "NULL"}');
+    print('Batch timer: ${_batchTimer != null ? (_batchTimer!.isActive ? "ACTIVE" : "INACTIVE") : "NULL"}');
+    print('');
+    print('Buffer status:');
+    print('  Current buffer size: ${_logBuffer.length}');
+    print('  Batch size trigger: $batchSize');
+    print('  Batch interval: $batchInterval');
+    print('');
+    print('Statistics:');
+    print('  Successful sends: $_successfulSends');
+    print('  Failed sends: $_failedSends');
+    print('  Last send time: $_lastSendTime');
+    print('');
+    print('Auth:');
+    print('  Auth type: $authType');
+    print('  Has auth token: ${authToken != null}');
+    print('  Headers: $headers');
+    print('==================================\n');
   }
 }

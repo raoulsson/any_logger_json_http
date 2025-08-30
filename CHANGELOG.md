@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.9
+
+* Logs are not sent after previous versions. Fixed
+
 ## 1.0.8
 
 * Added new appender method for short self description to improve logger config debugging
