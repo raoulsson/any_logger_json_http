@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.7
+
+* Improved self logging
+
 ## 1.0.6
 
 * Adding documentation on how to register this extension
