@@ -1,8 +1,12 @@
 # Changelog
 
+## 1.0.8
+
+* Added new appender method for short self description to improve logger config debugging
+
 ## 1.0.7
 
-* Improved self logging
+* Improved self logging~~
 
 ## 1.0.6
 

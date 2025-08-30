@@ -436,4 +436,34 @@ class JsonHttpAppender extends Appender {
       'bufferSize': _logBuffer.length,
     };
   }
+
+  @override
+  Map<String, dynamic> getConfig() {
+    final config = super.getConfig();
+    config.addAll({
+      'url': url,
+      'endpointPath': endpointPath,
+      'headers': headers,
+      'authType': authType,
+      'batchSize': batchSize,
+      'batchInterval': batchInterval.toString(),
+      'compressBatch': compressBatch,
+      'maxRetries': maxRetries,
+      'retryDelay': retryDelay.toString(),
+      'exponentialBackoff': exponentialBackoff,
+      'includeStackTrace': includeStackTrace,
+      'includeMetadata': includeMetadata,
+      'bufferSize': _logBuffer.length,
+      'successfulSends': _successfulSends,
+      'failedSends': _failedSends,
+      'lastSendTime': _lastSendTime?.toIso8601String(),
+      'test': test,
+    });
+    return config;
+  }
+
+  @override
+  String getShortConfigDesc() {
+    return 'url: $url, batchSize: $batchSize, batchInterval: $batchInterval';
+  }
 }
