@@ -1,6 +1,7 @@
 # Files and directories created by pub
 .dart_tool/
 .packages
+*.iml
 
 # Conventional directory for build outputs
 build/
@@ -17,3 +18,6 @@ http_endpoint_credentials.txt
 *.log
 .anylogger/
 pubspec.lock
+logs/
+
+pubspec.yaml.local

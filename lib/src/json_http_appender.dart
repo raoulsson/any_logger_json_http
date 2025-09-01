@@ -56,7 +56,8 @@ class JsonHttpAppender extends Appender {
   JsonHttpAppender() : super();
 
   /// Factory constructor for configuration-based creation
-  static Future<JsonHttpAppender> fromConfig(Map<String, dynamic> config, {bool test = false, DateTime? date}) async {
+  static Future<JsonHttpAppender> fromConfig(Map<String, dynamic> config,
+      {bool test = false, DateTime? date}) async {
     final appender = JsonHttpAppender()
       ..test = test
       ..created = date ?? DateTime.now();
@@ -86,7 +87,8 @@ class JsonHttpAppender extends Appender {
     if (config.containsKey('authToken')) {
       appender.authToken = config['authToken'];
       appender.authType = config['authType'] ?? 'Bearer';
-    } else if (config.containsKey('username') && config.containsKey('password')) {
+    } else if (config.containsKey('username') &&
+        config.containsKey('password')) {
       appender.username = config['username'];
       appender.password = config['password'];
       appender.authType = 'Basic';
@@ -105,9 +107,11 @@ class JsonHttpAppender extends Appender {
     }
 
     if (config.containsKey('batchIntervalSeconds')) {
-      appender.batchInterval = Duration(seconds: config['batchIntervalSeconds']);
+      appender.batchInterval =
+          Duration(seconds: config['batchIntervalSeconds']);
     } else if (config.containsKey('flushIntervalSeconds')) {
-      appender.batchInterval = Duration(seconds: config['flushIntervalSeconds']);
+      appender.batchInterval =
+          Duration(seconds: config['flushIntervalSeconds']);
     }
 
     if (config.containsKey('compressBatch')) {
@@ -146,7 +150,8 @@ class JsonHttpAppender extends Appender {
 
   /// Synchronous factory - throws since HTTP requires async
   factory JsonHttpAppender.fromConfigSync(Map<String, dynamic> config) {
-    throw UnsupportedError('JsonHttpAppender requires async initialization. Use fromConfig() or builder().build()');
+    throw UnsupportedError(
+        'JsonHttpAppender requires async initialization. Use fromConfig() or builder().build()');
   }
 
   /// Initialize the appender
@@ -155,7 +160,8 @@ class JsonHttpAppender extends Appender {
     _setupAuthHeaders();
 
     if (test) {
-      Logger.getSelfLogger()?.logDebug('JsonHttpAppender in test mode - skipping HTTP client and timer initialization');
+      Logger.getSelfLogger()?.logDebug(
+          'JsonHttpAppender in test mode - skipping HTTP client and timer initialization');
       return;
     }
 
@@ -187,7 +193,8 @@ class JsonHttpAppender extends Appender {
         _sendBatch();
       }
     });
-    Logger.getSelfLogger()?.logDebug('Batch timer started with interval: $batchInterval');
+    Logger.getSelfLogger()
+        ?.logDebug('Batch timer started with interval: $batchInterval');
   }
 
   @override
@@ -229,7 +236,8 @@ class JsonHttpAppender extends Appender {
   @override
   void append(LogRecord logRecord) {
     if (!enabled) {
-      Logger.getSelfLogger()?.logTrace('JsonHttpAppender: Skipping append - appender disabled');
+      Logger.getSelfLogger()
+          ?.logTrace('JsonHttpAppender: Skipping append - appender disabled');
       return;
     }
 
@@ -238,29 +246,31 @@ class JsonHttpAppender extends Appender {
     // Add to buffer
     _logBuffer.add(logRecord);
 
-    if (Logger.getSelfLogger() != null && Logger.getSelfLogger()!.isTraceEnabled) {
+    if (Logger.getSelfLogger() != null &&
+        Logger.getSelfLogger()!.isTraceEnabled) {
       if (_logBuffer.length % 25 == 0) {
-        Logger.getSelfLogger()
-            ?.logTrace('JsonHttpAppender: Added to buffer. Size now: ${_logBuffer.length}/$batchSize');
+        Logger.getSelfLogger()?.logTrace(
+            'JsonHttpAppender: Added to buffer. Size now: ${_logBuffer.length}/$batchSize');
       }
     }
 
     // Check if we should send immediately (for critical errors)
     if (logRecord.level.index >= Level.ERROR.index && _logBuffer.length >= 10) {
-      Logger.getSelfLogger()
-          ?.logDebug('JsonHttpAppender: Triggering immediate send due to ERROR level with buffer >= 10');
+      Logger.getSelfLogger()?.logDebug(
+          'JsonHttpAppender: Triggering immediate send due to ERROR level with buffer >= 10');
       _sendBatch(); // This is fire-and-forget
     }
     // Or if buffer is full
     else if (_logBuffer.length >= batchSize) {
-      Logger.getSelfLogger()
-          ?.logDebug('JsonHttpAppender: Buffer full (${_logBuffer.length}/$batchSize), triggering send');
+      Logger.getSelfLogger()?.logDebug(
+          'JsonHttpAppender: Buffer full (${_logBuffer.length}/$batchSize), triggering send');
       _sendBatch(); // This is fire-and-forget
     }
   }
 
   Future<void> _sendBatch() async {
-    Logger.getSelfLogger()?.logDebug('JsonHttpAppender._sendBatch() called with ${_logBuffer.length} logs');
+    Logger.getSelfLogger()?.logDebug(
+        'JsonHttpAppender._sendBatch() called with ${_logBuffer.length} logs');
 
     if (_logBuffer.isEmpty) {
       Logger.getSelfLogger()?.logTrace('JsonHttpAppender: No logs to send');
@@ -270,17 +280,20 @@ class JsonHttpAppender extends Appender {
     // Copy and clear buffer
     final logs = List<LogRecord>.from(_logBuffer);
     _logBuffer.clear();
-    Logger.getSelfLogger()?.logDebug('JsonHttpAppender: Preparing to send ${logs.length} logs');
+    Logger.getSelfLogger()
+        ?.logDebug('JsonHttpAppender: Preparing to send ${logs.length} logs');
 
     if (test) {
-      Logger.getSelfLogger()?.logDebug('Test mode: Would send batch of ${logs.length} logs to $url');
+      Logger.getSelfLogger()?.logDebug(
+          'Test mode: Would send batch of ${logs.length} logs to $url');
       _successfulSends++;
       _lastSendTime = DateTime.now();
       return;
     }
 
     if (_httpClient == null) {
-      Logger.getSelfLogger()?.logError('JsonHttpAppender: HTTP client is null! Cannot send logs');
+      Logger.getSelfLogger()
+          ?.logError('JsonHttpAppender: HTTP client is null! Cannot send logs');
       // Put logs back
       _logBuffer.insertAll(0, logs);
       return;
@@ -289,28 +302,34 @@ class JsonHttpAppender extends Appender {
     try {
       final jsonData = _createJsonPayload(logs);
       final body = jsonEncode(jsonData);
-      Logger.getSelfLogger()?.logDebug('JsonHttpAppender: Sending ${body.length} bytes to $url');
+      Logger.getSelfLogger()
+          ?.logDebug('JsonHttpAppender: Sending ${body.length} bytes to $url');
 
       final success = await _sendWithRetry(body);
 
       if (success) {
         _successfulSends++;
         _lastSendTime = DateTime.now();
-        Logger.getSelfLogger()?.logInfo('JsonHttpAppender: Successfully sent ${logs.length} log records');
+        Logger.getSelfLogger()?.logInfo(
+            'JsonHttpAppender: Successfully sent ${logs.length} log records');
       } else {
         _failedSends++;
-        Logger.getSelfLogger()?.logWarn('JsonHttpAppender: Failed to send ${logs.length} logs');
+        Logger.getSelfLogger()
+            ?.logWarn('JsonHttpAppender: Failed to send ${logs.length} logs');
         // Put logs back if send failed (with overflow protection)
         if (_logBuffer.length < batchSize * 2) {
           _logBuffer.insertAll(0, logs);
-          Logger.getSelfLogger()?.logDebug('JsonHttpAppender: Returned ${logs.length} logs to buffer');
+          Logger.getSelfLogger()?.logDebug(
+              'JsonHttpAppender: Returned ${logs.length} logs to buffer');
         } else {
-          Logger.getSelfLogger()?.logWarn('Dropping ${logs.length} log records due to buffer overflow');
+          Logger.getSelfLogger()?.logWarn(
+              'Dropping ${logs.length} log records due to buffer overflow');
         }
       }
     } catch (e, stack) {
       _failedSends++;
-      Logger.getSelfLogger()?.logError('JsonHttpAppender: Exception in _sendBatch: $e\n$stack');
+      Logger.getSelfLogger()
+          ?.logError('JsonHttpAppender: Exception in _sendBatch: $e\n$stack');
 
       // Put logs back if there's room
       if (_logBuffer.length < batchSize * 2) {
@@ -383,7 +402,9 @@ class JsonHttpAppender extends Appender {
 
     while (attempts <= maxRetries) {
       try {
-        final fullUrl = endpointPath != null ? '$url/$endpointPath'.replaceAll('//', '/') : url;
+        final fullUrl = endpointPath != null
+            ? '$url/$endpointPath'.replaceAll('//', '/')
+            : url;
 
         final response = await _httpClient!
             .post(
@@ -397,16 +418,20 @@ class JsonHttpAppender extends Appender {
           return true;
         } else if (response.statusCode >= 400 && response.statusCode < 500) {
           // Client error - don't retry
-          Logger.getSelfLogger()?.logError('Client error sending logs: ${response.statusCode} ${response.body}');
+          Logger.getSelfLogger()?.logError(
+              'Client error sending logs: ${response.statusCode} ${response.body}');
           return false;
         } else {
           // Server error - retry
-          Logger.getSelfLogger()?.logWarn('Server error: ${response.statusCode}, attempt ${attempts + 1}/$maxRetries');
+          Logger.getSelfLogger()?.logWarn(
+              'Server error: ${response.statusCode}, attempt ${attempts + 1}/$maxRetries');
         }
       } on TimeoutException {
-        Logger.getSelfLogger()?.logWarn('Timeout sending logs, attempt ${attempts + 1}/$maxRetries');
+        Logger.getSelfLogger()?.logWarn(
+            'Timeout sending logs, attempt ${attempts + 1}/$maxRetries');
       } catch (e) {
-        Logger.getSelfLogger()?.logWarn('Error sending logs: $e, attempt ${attempts + 1}/$maxRetries');
+        Logger.getSelfLogger()?.logWarn(
+            'Error sending logs: $e, attempt ${attempts + 1}/$maxRetries');
       }
 
       attempts++;
@@ -501,7 +526,8 @@ class JsonHttpAppender extends Appender {
     print('\n===== Testing JsonHttpAppender =====\n');
 
     // Check if it's registered
-    print('1. Is JSON_HTTP registered? ${AppenderRegistry.instance.isRegistered("JSON_HTTP")}');
+    print(
+        '1. Is JSON_HTTP registered? ${AppenderRegistry.instance.isRegistered("JSON_HTTP")}');
 
     // Get the logger and find JsonHttpAppender
     final logger = LoggerFactory.getRootLogger();
@@ -516,7 +542,8 @@ class JsonHttpAppender extends Appender {
 
     if (jsonAppender == null) {
       print('ERROR: No JsonHttpAppender found in logger!');
-      print('Appenders in logger: ${logger.appenders.map((a) => a.getType()).toList()}');
+      print(
+          'Appenders in logger: ${logger.appenders.map((a) => a.getType()).toList()}');
       return;
     }
 
@@ -534,7 +561,8 @@ class JsonHttpAppender extends Appender {
 
     // Try to trigger an error to force send
     print('5. Logging an error to trigger immediate send...');
-    logger.logError('Test error message', exception: Exception('Test exception'));
+    logger.logError('Test error message',
+        exception: Exception('Test exception'));
 
     await Future.delayed(Duration(seconds: 1));
 
@@ -565,7 +593,8 @@ class JsonHttpAppender extends Appender {
     print('URL: $url');
     print('Endpoint path: $endpointPath');
     print('HTTP Client: ${_httpClient != null ? "initialized" : "NULL"}');
-    print('Batch timer: ${_batchTimer != null ? (_batchTimer!.isActive ? "ACTIVE" : "INACTIVE") : "NULL"}');
+    print(
+        'Batch timer: ${_batchTimer != null ? (_batchTimer!.isActive ? "ACTIVE" : "INACTIVE") : "NULL"}');
     print('');
     print('Buffer status:');
     print('  Current buffer size: ${_logBuffer.length}');
