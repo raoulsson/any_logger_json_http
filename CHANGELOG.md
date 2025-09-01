@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+* Adapting to any_logger 1.1.0 changes
+
 ## 1.0.9
 
 * Logs are not sent after previous versions. Fixed
