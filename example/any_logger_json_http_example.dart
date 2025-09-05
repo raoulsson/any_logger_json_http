@@ -166,9 +166,7 @@ Future<void> example4_builder() async {
 
   // Using presets
   final logstashAppender =
-      await jsonHttpAppenderBuilder('https://logstash.example.com')
-          .withLogstashPreset()
-          .build(test: true);
+      await jsonHttpAppenderBuilder('https://logstash.example.com').withLogstashPreset().build(test: true);
 
   print('\nLogstash preset appender:');
   print('  Batch size: ${logstashAppender.batchSize}');
@@ -207,8 +205,7 @@ Future<void> example5_loggerFactory() async {
   print('  Appenders: ${appenders.length}');
   for (var i = 0; i < appenders.length; i++) {
     final appender = appenders[i];
-    print(
-        '    ${i + 1}. Type: ${appender['type']}, Level: ${appender['level']}');
+    print('    ${i + 1}. Type: ${appender['type']}, Level: ${appender['level']}');
   }
 
   // Initialize in test mode to avoid actual HTTP connections

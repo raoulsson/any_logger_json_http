@@ -32,8 +32,7 @@ import 'json_http_appender.dart';
 /// ```
 
 /// Convenience factory function for creating a JsonHttpAppenderBuilder.
-JsonHttpAppenderBuilder jsonHttpAppenderBuilder(String url) =>
-    JsonHttpAppenderBuilder(url);
+JsonHttpAppenderBuilder jsonHttpAppenderBuilder(String url) => JsonHttpAppenderBuilder(url);
 
 class JsonHttpAppenderBuilder {
   final Map<String, dynamic> _config = {

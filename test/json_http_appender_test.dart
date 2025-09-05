@@ -58,13 +58,11 @@ void main() {
         'authType': 'Bearer',
       };
 
-      final bearerAppender =
-          await JsonHttpAppender.fromConfig(bearerConfig, test: true);
+      final bearerAppender = await JsonHttpAppender.fromConfig(bearerConfig, test: true);
       expect(bearerAppender.authToken, equals('sk-123456'));
       expect(bearerAppender.authType, equals('Bearer'));
       // Headers are now set in initialize() even in test mode
-      expect(
-          bearerAppender.headers['Authorization'], equals('Bearer sk-123456'));
+      expect(bearerAppender.headers['Authorization'], equals('Bearer sk-123456'));
 
       // Basic auth
       final basicConfig = {
@@ -74,14 +72,12 @@ void main() {
         'password': 'pass',
       };
 
-      final basicAppender =
-          await JsonHttpAppender.fromConfig(basicConfig, test: true);
+      final basicAppender = await JsonHttpAppender.fromConfig(basicConfig, test: true);
       expect(basicAppender.username, equals('user'));
       expect(basicAppender.password, equals('pass'));
       expect(basicAppender.authType, equals('Basic'));
 
-      final expectedBasicAuth =
-          'Basic ${base64Encode(utf8.encode('user:pass'))}';
+      final expectedBasicAuth = 'Basic ${base64Encode(utf8.encode('user:pass'))}';
       expect(basicAppender.headers['Authorization'], equals(expectedBasicAuth));
     });
 
@@ -266,17 +262,13 @@ void main() {
 
     test('should build with authentication', () async {
       final bearerAppender =
-          await jsonHttpAppenderBuilder('https://api.example.com')
-              .withBearerToken('sk-123456')
-              .build(test: true);
+          await jsonHttpAppenderBuilder('https://api.example.com').withBearerToken('sk-123456').build(test: true);
 
       expect(bearerAppender.authToken, equals('sk-123456'));
       expect(bearerAppender.authType, equals('Bearer'));
 
       final basicAppender =
-          await jsonHttpAppenderBuilder('https://api.example.com')
-              .withBasicAuth('user', 'pass')
-              .build(test: true);
+          await jsonHttpAppenderBuilder('https://api.example.com').withBasicAuth('user', 'pass').build(test: true);
 
       expect(basicAppender.username, equals('user'));
       expect(basicAppender.password, equals('pass'));
@@ -287,9 +279,7 @@ void main() {
 
     test('should apply presets correctly', () async {
       final logstashAppender =
-          await jsonHttpAppenderBuilder('https://logstash.example.com')
-              .withLogstashPreset()
-              .build(test: true);
+          await jsonHttpAppenderBuilder('https://logstash.example.com').withLogstashPreset().build(test: true);
 
       expect(logstashAppender.batchSize, equals(200));
       expect(logstashAppender.batchInterval, equals(Duration(seconds: 30)));
@@ -297,9 +287,7 @@ void main() {
       expect(logstashAppender.includeStackTrace, equals(true));
 
       final highVolumeAppender =
-          await jsonHttpAppenderBuilder('https://high-volume.example.com')
-              .withHighVolumePreset()
-              .build(test: true);
+          await jsonHttpAppenderBuilder('https://high-volume.example.com').withHighVolumePreset().build(test: true);
 
       expect(highVolumeAppender.batchSize, equals(500));
       expect(highVolumeAppender.includeStackTrace, equals(false));
