@@ -19,14 +19,14 @@ endpoints with automatic batching, retry logic, and compression support.
 ```yaml
 dependencies:
   any_logger: ^x.y.z  
-  any_logger_json_http: ^x.y.z  // See Installing
+  any_logger_json_http: ^x.y.z  # See Installing
 ```
 
 To register the JSON HTTP appender you have to import the library
 
 ```dart
 import 'package:any_logger/any_logger.dart';
-import 'package:any_logger_mysql/any_logger_mysql.dart';
+import 'package:any_logger_json_http/any_logger_json_http.dart';
 ```
 and call:
 
@@ -39,58 +39,42 @@ AnyLoggerJsonHttpExtension.register();
 ### Simple Setup
 
 ```dart
-await
-LoggerFactory.builder
-().console
-(
-level: Level.INFO)
-    .jsonHttp(
-url: 'https://logs.example.com/api/logs',
-level: Level.WARN,
-authToken: 'your-api-key',
-)
-    .build();
+await LoggerFactory.builder()
+  .console(level: Level.INFO)
+  .jsonHttp(
+    url: 'https://logs.example.com/api/logs',
+    level: Level.WARN,
+    authToken: 'your-api-key',
+  )
+  .build();
 
 Logger.info('This goes to console only');
 Logger.warn('This goes to both console and HTTP endpoint');
-Logger
-.
-error
-(
-'
-Errors are batched and sent efficiently
-'
-);
+Logger.error('Errors are batched and sent efficiently');
 ```
 
 ### With Authentication
 
 ```dart
 // Bearer token (most common)
-await
-LoggerFactory.builder
-().jsonHttp
-(
-url: 'https://api.logservice.com',
-authToken: 'sk-1234567890',
-authType: 'Bearer',
-level: Level.ERROR,
-)
-    .build();
+await LoggerFactory.builder()
+  .jsonHttp(
+    url: 'https://api.logservice.com',
+    authToken: 'sk-1234567890',
+    authType: 'Bearer',
+    level: Level.ERROR,
+  )
+  .build();
 
 // Basic authentication
 await LoggerFactory.builder()
-    .jsonHttp(
-url: 'https://logs.example.com',
-username: 'logger',
-password: 'secure_password',
-level: Level.INFO
-,
-)
-.
-build
-(
-);
+  .jsonHttp(
+    url: 'https://logs.example.com',
+    username: 'logger',
+    password: 'secure_password',
+    level: Level.INFO,
+  )
+  .build();
 ```
 
 ## Configuration Options
@@ -98,34 +82,25 @@ build
 ### Using Builder Pattern
 
 ```dart
-
-final appender = await
-jsonHttpAppenderBuilder
-('https://logs.example.com
-'
-)
-.withLevel(Level.ERROR)
-    .withBearerToken('api-key-123')
-    .withBatchSize(100)
-    .withBatchIntervalSeconds(30)
-    .withHeaders({
-'X-Application': 'MyApp',
-'X-Environment': 'production',
-})
-    .withStackTraces(true)
-    .withMetadata(true)
-    .withMaxRetries(5)
-    .withExponentialBackoff(true)
-.
-build
-(
-);
+final appender = await jsonHttpAppenderBuilder('https://logs.example.com')
+  .withLevel(Level.ERROR)
+  .withBearerToken('api-key-123')
+  .withBatchSize(100)
+  .withBatchIntervalSeconds(30)
+  .withHeaders({
+    'X-Application': 'MyApp',
+    'X-Environment': 'production',
+  })
+  .withStackTraces(true)
+  .withMetadata(true)
+  .withMaxRetries(5)
+  .withExponentialBackoff(true)
+  .build();
 ```
 
 ### Using Configuration Map
 
 ```dart
-
 final config = {
   'appenders': [
     {
@@ -150,11 +125,7 @@ final config = {
   ]
 };
 
-await
-LoggerFactory.init
-(
-config
-);
+await LoggerFactory.init(config);
 ```
 
 ### Configuration Parameters
@@ -230,18 +201,9 @@ The appender sends logs in this format:
 ### Logstash Integration
 
 ```dart
-
-final appender = await
-jsonHttpAppenderBuilder
-('https://logstash.example.com
-'
-)
-.withLogstashPreset(
-) // Optimized for Logstash
-.
-build
-(
-);
+final appender = await jsonHttpAppenderBuilder('https://logstash.example.com')
+  .withLogstashPreset() // Optimized for Logstash
+  .build();
 
 // Preset configures:
 // - batchSize: 200
@@ -254,18 +216,9 @@ build
 ### High Volume Logging
 
 ```dart
-
-final appender = await
-jsonHttpAppenderBuilder
-('https://logs.example.com
-'
-)
-.withHighVolumePreset(
-) // Optimized for high throughput
-.
-build
-(
-);
+final appender = await jsonHttpAppenderBuilder('https://logs.example.com')
+  .withHighVolumePreset() // Optimized for high throughput
+  .build();
 
 // Preset configures:
 // - batchSize: 500
@@ -278,17 +231,10 @@ build
 ### Critical Errors Only
 
 ```dart
-
-final appender = await
-jsonHttpAppenderBuilder
-('https://alerts.example.com
-'
-)
-.withCriticalErrorPreset()
-    .withBearerToken('alert-api-key')
-    .build
-(
-);
+final appender = await jsonHttpAppenderBuilder('https://alerts.example.com')
+  .withCriticalErrorPreset()
+  .withBearerToken('alert-api-key')
+  .build();
 
 // Preset configures:
 // - level: ERROR
@@ -304,80 +250,67 @@ jsonHttpAppenderBuilder
 
 ```dart
 // Datadog, Loggly, Papertrail, etc.
-await
-LoggerFactory.builder
-().console
-().jsonHttp
-(
-url: 'https://http-intake.logs.datadoghq.com',
-endpointPath: 'v1/input',
-authToken: process.env['DD_API_KEY'],
-headers: {
-'DD-EVP-ORIGIN': 'my-app',
-'DD-EVP-ORIGIN-VERSION': '1.0.0',
-},
-level: Level.INFO,
-)
-    .build(
-);
+await LoggerFactory.builder()
+  .console()
+  .jsonHttp(
+    url: 'https://http-intake.logs.datadoghq.com',
+    endpointPath: 'v1/input',
+    authToken: process.env['DD_API_KEY'],
+    headers: {
+      'DD-EVP-ORIGIN': 'my-app',
+      'DD-EVP-ORIGIN-VERSION': '1.0.0',
+    },
+    level: Level.INFO,
+  )
+  .build();
 ```
 
 ### With Custom Backend
 
 ```dart
-await
-LoggerFactory.builder
-().jsonHttp
-(
-url: 'https://api.mycompany.com',
-endpointPath: 'logging/v1/ingest',
-authToken: await getAuthToken(),
-headers: {
-'X-Client-Version': '2.1.0',
-'X-Platform': Platform.operatingSystem,
-},
-batchSize: 50,
-includeMetadata: true,
-)
-.
-build
-(
-);
+await LoggerFactory.builder()
+  .jsonHttp(
+    url: 'https://api.mycompany.com',
+    endpointPath: 'logging/v1/ingest',
+    authToken: await getAuthToken(),
+    headers: {
+      'X-Client-Version': '2.1.0',
+      'X-Platform': Platform.operatingSystem,
+    },
+    batchSize: 50,
+    includeMetadata: true,
+  )
+  .build();
 ```
 
 ### Error Alerting System
 
 ```dart
 // Send only errors immediately to alerting system
-await
-LoggerFactory.builder
-().file
-(
-filePattern: 'app', level: Level.DEBUG) // All logs to file
-    .jsonHttp(
-url: 'https://alerts.example.com/critical',
-level: Level.ERROR, // Only errors to HTTP
-batchSize: 1, // Send immediately
-authToken: 'alert-key',
-)
-    .build();
+await LoggerFactory.builder()
+  .file(filePattern: 'app', level: Level.DEBUG) // All logs to file
+  .jsonHttp(
+    url: 'https://alerts.example.com/critical',
+    level: Level.ERROR, // Only errors to HTTP
+    batchSize: 1, // Send immediately
+    authToken: 'alert-key',
+  )
+  .build();
 ```
 
 ## Monitoring & Statistics
 
 ```dart
-
 final appender = logger.appenders
     .whereType<JsonHttpAppender>()
     .firstOrNull;
 
-if (
-appender != null) {
-final stats = appender.getStatistics();
-print('Successful sends: ${stats['successfulSends']}');
-print('Failed sends: ${stats['failedSends']}');
-print('Buffer size: ${stats['bufferSize']}');
-print('Last send: ${stats['lastSendTime']}');
+if (appender != null) {
+  final stats = appender.getStatistics();
+  print('Successful sends: ${stats['successfulSends']}');
+  print('Failed sends: ${stats['failedSends']}');
+  print('Buffer size: ${stats['bufferSize']}');
+  print('Last send: ${stats['lastSendTime']}');
 }
 ```
 
@@ -399,22 +332,18 @@ print('Last send: ${stats['lastSendTime']}');
 
 ```dart
 // Configure retry strategy
-    .withMaxRetries(5)
-    .withExponentialBackoff(true)
-    .withTimeoutSeconds(
-10
-)
+.withMaxRetries(5)
+.withExponentialBackoff(true)
+.withTimeoutSeconds(10)
 ```
 
 ### 4. Optimize Payload Size
 
 ```dart
 // For high-volume, non-critical logs
-    .withStackTraces(false) // Reduce size
-    .withMetadata(false) // Only if not needed
-    .withCompression(
-true
-) // Compress batches
+.withStackTraces(false)  // Reduce size
+.withMetadata(false)      // Only if not needed
+.withCompression(true)    // Compress batches
 ```
 
 ### 5. Secure Your Credentials
@@ -423,11 +352,7 @@ true
 // Use environment variables or secure storage
 final apiKey = Platform.environment['LOG_API_KEY'];
 // Or use a secrets manager
-final apiKey = await
-SecretManager.getSecret
-('log-api-key
-'
-);
+final apiKey = await SecretManager.getSecret('log-api-key');
 ```
 
 ## Troubleshooting
@@ -440,17 +365,10 @@ SecretManager.getSecret
 4. **Enable self-debugging**:
 
 ```dart
-await
-LoggerFactory.builder
-().jsonHttp
-(
-url: 'https://logs.example.com')
-    .withSelfDebug(Level.DEBUG
-)
-.
-build
-(
-);
+await LoggerFactory.builder()
+  .jsonHttp(url: 'https://logs.example.com')
+  .withSelfDebug(Level.DEBUG)
+  .build();
 ```
 
 ### High Memory Usage
@@ -465,9 +383,7 @@ Always flush before app termination:
 
 ```dart
 // In your app shutdown handler
-await
-LoggerFactory.flushAll
-();
+await LoggerFactory.flushAll();
 ```
 
 ## Testing
@@ -475,15 +391,9 @@ LoggerFactory.flushAll
 For unit tests, use test mode to avoid actual HTTP calls:
 
 ```dart
-
-final appender = await
-jsonHttpAppenderBuilder
-('https://test.example.com
-'
-)
-.withLevel(Level.INFO)
-    .build(test: true
-); // No actual HTTP calls made
+final appender = await jsonHttpAppenderBuilder('https://test.example.com')
+  .withLevel(Level.INFO)
+  .build(test: true); // No actual HTTP calls made
 ```
 
 ## License

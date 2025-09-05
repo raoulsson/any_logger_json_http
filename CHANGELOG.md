@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+* Formatter jittered README.md formatting. Fixed
+
 ## 1.1.0
 
 * Adapting to any_logger 1.1.0 changes
