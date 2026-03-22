@@ -53,6 +53,15 @@ class JsonHttpAppender extends Appender {
   bool test = false;
   http.Client? _httpClient;
 
+  // Fallback IDs used when LoggerFactory returns null (e.g. NullIdProvider active at init time).
+  final String _fallbackSessionId = _generateShortId();
+  final String _fallbackDeviceId = _generateShortId();
+
+  static String _generateShortId() {
+    final now = DateTime.now();
+    return '${now.millisecondsSinceEpoch.toRadixString(36)}';
+  }
+
   JsonHttpAppender() : super();
 
   /// Factory constructor for configuration-based creation
@@ -328,8 +337,8 @@ class JsonHttpAppender extends Appender {
     if (includeMetadata) {
       payload['metadata'] = {
         'appVersion': LoggerFactory.getAppVersion(),
-        'deviceId': LoggerFactory.getDeviceId(),
-        'sessionId': LoggerFactory.getSessionId(),
+        'deviceId': LoggerFactory.getDeviceId() ?? _fallbackDeviceId,
+        'sessionId': LoggerFactory.getSessionId() ?? _fallbackSessionId,
         'hostname': _getHostname(),
       };
     }
