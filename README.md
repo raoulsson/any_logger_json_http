@@ -4,6 +4,8 @@ A JSON HTTP appender extension for [Any Logger](https://pub.dev/packages/any_log
 sending structured logs to REST APIs, Logstash, centralized logging services, and custom HTTP
 endpoints with automatic batching, retry logic, and compression support.
 
+[![Pub Version](https://img.shields.io/pub/v/any_logger_json_http?style=flat-square)](https://pub.dev/packages/any_logger_json_http)
+
 ## Features
 
 - **Automatic Batching** - Intelligently batches logs to reduce network overhead
