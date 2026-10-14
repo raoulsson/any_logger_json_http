@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.3
+
+* Code formatted with `dart format`; dropped the `lines_longer_than_80_chars` lint (not part of the recommended lints). No API change.
+
 ## 1.1.2
 
 * **Fallback device/session IDs** — `JsonHttpAppender` now generates short timestamp-based fallback IDs at construction time. These are used in the metadata payload when `LoggerFactory.getDeviceId()` or `LoggerFactory.getSessionId()` return null (e.g. when `NullIdProvider` is active because the appender started disabled). Prevents the server from rejecting batches with a 400 Missing deviceId/sessionId error.
